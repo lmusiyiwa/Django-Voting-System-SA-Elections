@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login with Firestore</title>
+    <!-- Load Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#4f46e5',
+                        'secondary': '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for better aesthetics */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        .card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .form-input {
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.5); /* Primary color ring */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-md">
+        <!-- Message Box -->
+        <div id="message-box" class="hidden fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg transition-opacity duration-300" role="alert">
+            <p id="message-text" class="font-bold"></p>
+        </div>
+
+        <!-- Authentication Card -->
+        <div id="auth-card" class="card bg-white p-8 rounded-xl space-y-6">
+            <h1 class="text-3xl font-bold text-center text-gray-800" id="form-title">Login</h1>
+
+            <form id="auth-form" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" required class="form-input mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:ring-primary focus:border-primary">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" required class="form-input mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:ring-primary focus:border-primary">
+                </div>
+                <button type="submit" id="auth-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-150 ease-in-out">
+                    Login
+                </button>
+            </form>
+
+            <div class="text-center text-sm">
+                <p id="toggle-link" class="text-gray-600 cursor-pointer hover:text-primary transition">
+                    Don't have an account? <span class="font-medium text-primary hover:text-secondary">Register here</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Dashboard View (Hidden until successful login) -->
+        <div id="dashboard" class="hidden card bg-white p-8 rounded-xl space-y-6 text-center">
+            <h2 class="text-3xl font-bold text-green-600">Welcome!</h2>
+            <p class="text-lg text-gray-700">You are securely logged in.</p>
+            <p class="text-sm text-gray-500">Your User ID (for collaboration):</p>
+            <p id="user-id-display" class="font-mono text-xs p-2 bg-gray-100 rounded-lg break-all text-gray-800"></p>
+            <p class="text-sm text-gray-500">Your email: <span id="user-email-display" class="font-medium text-gray-800"></span></p>
+
+            <button id="logout-button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {
+            getAuth,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            serverTimestamp,
+            setLogLevel,
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let db;
+        let auth;
+        let userId = null;
+        let isRegistering = false;
+
+        // --- Utility Functions ---
+
+        /**
+         * Displays a temporary, dismissible message box.
+         * @param {string} message The message to display.
+         * @param {string} type 'success' or 'error'
+         */
+        function showMessage(message, type = 'error') {
+            const box = document.getElementById('message-box');
+            const text = document.getElementById('message-text');
+
+            text.textContent = message;
+
+            // Reset classes
+            box.classList.remove('bg-red-100', 'border-red-500', 'text-red-700', 'bg-green-100', 'border-green-500', 'text-green-700');
+            box.classList.add(
+                type === 'success' ? 'bg-green-100' : 'bg-red-100',
+                type === 'success' ? 'border-green-500' : 'border-red-500',
+                type === 'success' ? 'text-green-700' : 'text-red-700'
+            );
+
+            box.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.add('opacity-0');
+                setTimeout(() => box.classList.add('hidden', 'opacity-100'), 300);
+            }, 5000);
+        }
+
+        /**
+         * Sets the loading state of the button.
+         * @param {boolean} isLoading
+         */
+        function setLoading(isLoading) {
+            const button = document.getElementById('auth-button');
+            if (isLoading) {
+                button.textContent = isRegistering ? 'Registering...' : 'Logging In...';
+                button.disabled = true;
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                button.textContent = isRegistering ? 'Register' : 'Login';
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        /**
+         * Switches the form between Login and Registration view.
+         */
+        function toggleFormMode() {
+            isRegistering = !isRegistering;
+            document.getElementById('form-title').textContent = isRegistering ? 'Register Account' : 'Login';
+            document.getElementById('auth-button').textContent = isRegistering ? 'Register' : 'Login';
+            document.getElementById('toggle-link').innerHTML = isRegistering
+                ? 'Already have an account? <span class="font-medium text-primary hover:text-secondary">Login here</span>'
+                : 'Don\'t have an account? <span class="font-medium text-primary hover:text-secondary">Register here</span>';
+        }
+
+        // --- Firebase Core Functions ---
+
+        /**
+         * Initializes Firebase and attempts sign-in.
+         */
+        async function initFirebase() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is empty. Cannot initialize.");
+                    return;
+                }
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('debug'); // Enable Firestore logs
+
+                // 1. Initial Authentication
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // 2. Auth State Listener
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        updateUI(true, user.uid, user.email);
+                    } else {
+                        userId = null;
+                        updateUI(false);
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization or initial sign-in failed:", error);
+                showMessage(`Firebase Error: ${error.message}`);
+            }
+        }
+
+
+        /**
+         * Handles Login and Registration submission.
+         * @param {Event} e
+         */
+        async function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showMessage("Please enter both email and password.");
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                if (isRegistering) {
+                    // 1. Register User (Firebase Auth)
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // 2. Store User Data in Firestore (The 'database' part)
+                    // Data is stored publicly under /artifacts/{appId}/public/data/users/{userId}
+                    const userDocRef = doc(db, `artifacts/${appId}/public/data/users`, user.uid);
+                    await setDoc(userDocRef, {
+                        email: user.email,
+                        createdAt: serverTimestamp(),
+                        role: 'user'
+                    });
+
+                    showMessage("Registration successful! You are now logged in.", 'success');
+                } else {
+                    // 1. Login User (Firebase Auth)
+                    await signInWithEmailAndPassword(auth, email, password);
+                    // Auth state change listener will handle UI update
+                    showMessage("Login successful!", 'success');
+                }
+            } catch (error) {
+                console.error("Authentication failed:", error);
+
+                let errorMessage = error.message;
+                // Clean up common Firebase errors for better user display
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'This email is already registered.';
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = 'Invalid email or password.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password should be at least 6 characters.';
+                }
+                showMessage(errorMessage);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Handles User Logout.
+         */
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                showMessage("You have been logged out.", 'success');
+            } catch (error) {
+                console.error("Logout failed:", error);
+                showMessage(`Logout error: ${error.message}`);
+            }
+        }
+
+        /**
+         * Updates the UI based on authentication status.
+         * @param {boolean} isLoggedIn
+         * @param {string} uid
+         * @param {string} email
+         */
+        function updateUI(isLoggedIn, uid = '', email = '') {
+            const authCard = document.getElementById('auth-card');
+            const dashboard = document.getElementById('dashboard');
+            const userIdDisplay = document.getElementById('user-id-display');
+            const userEmailDisplay = document.getElementById('user-email-display');
+
+            if (isLoggedIn) {
+                authCard.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+                userIdDisplay.textContent = uid;
+                userEmailDisplay.textContent = email || 'N/A';
+            } else {
+                authCard.classList.remove('hidden');
+                dashboard.classList.add('hidden');
+                // Ensure form is reset to login mode on logout
+                if (isRegistering) {
+                    toggleFormMode();
+                }
+            }
+        }
+
+
+        // --- Event Listeners and Initial Setup ---
+
+        window.onload = () => {
+            initFirebase();
+            document.getElementById('auth-form').addEventListener('submit', handleAuth);
+            document.getElementById('logout-button').addEventListener('click', handleLogout);
+            document.getElementById('toggle-link').addEventListener('click', toggleFormMode);
+        };
+
+    </script>
+</body>
+</html>
