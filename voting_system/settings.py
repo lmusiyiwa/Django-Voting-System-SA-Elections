@@ -7,7 +7,7 @@ SECRET_KEY = "django-insecure-^2_qoo%2xiydnnjuln!z)+p#rhp49g3*#8zrtw%&asdnq(oce6
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'django-voting-system-sa-elections.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
