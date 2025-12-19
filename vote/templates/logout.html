@@ -1,0 +1,31 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logged Out - Voting System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/logout.css' %}">
+</head>
+
+<body>
+    <div class="logout-container">
+        <div class="header">
+            <h1>🇿🇦 SA Elections</h1>
+        </div>
+        <div class="message-box">
+            <h2>You Have Been Logged Out!</h2>
+            <p>Thank you for using SA Elections online voting system. Your session has been successfully terminated.</p>
+            <p>To access your account, please log in.</p>
+
+            <a href="{% url 'login' %}" class="login-button">
+                Log In Again
+            </a>
+
+            <p class="security-note">For security, please close your browser window now.</p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -10,47 +10,239 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'vote/css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/leaders.css' %}">
 
     <style>
-        body {
-            padding: 20px;
+        /* GLOBAL RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .card {
-            margin-bottom: 20px;
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* NAVBAR */
+        /* TOP WHITE BAR */
+        /* RESET NAV DEFAULTS THAT CAN BREAK LAYOUT */
+        nav.navbar-top,
+        .navbar-top * {
+            box-sizing: border-box;
+        }
+
+        nav.navbar-top a {
+            text-decoration: none;
+        }
+
+        /* NAVBAR GRID: LEFT | EMPTY | RIGHT */
+        nav.navbar-top {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            /* left fixed | middle flex | right fixed */
+            align-items: center;
+            gap: 0;
+            /* true empty middle */
+            padding: 20px 50px;
+            background-color: #004225;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* LEFT: SA Elections */
+        .navbar-left {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+        }
+
+        /* RIGHT: links + welcome + logout */
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-right a {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-right a:hover {
+            color: #F7B900;
+        }
+
+        .navbar-welcome {
+            font-weight: 600;
+            color: #FFD84D;
+            font-size: 1rem;
+        }
+
+
+
+
+        /* MAIN LAYOUT */
+        .sa-news-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* left content, right banner */
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 40px;
+            gap: 40px;
+        }
+
+        /* LEFT SIDE: NEWS CONTENT */
+        .news-left {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+        }
+
+        .news-left h1 {
+            font-weight: 800;
+            font-size: 2.4rem;
+            color: #004225;
+            text-transform: uppercase;
+            margin-bottom: 30px;
         }
 
         .news-article {
+            margin-bottom: 30px;
+        }
+
+        .news-article h2 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #004225;
+            margin-bottom: 15px;
+        }
+
+        .news-article p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        /* RIGHT SIDE: LOGIN-STYLE BANNER */
+        .sa-news-banner {
+            background: #FFD84D;
+            /* same yellow as login banner */
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 400px;
+            /* balanced height like login */
+        }
+
+        .sa-news-banner h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #004225;
             margin-bottom: 20px;
         }
 
-        .leader-img {
-            width: 100%;
-            max-height: 400px;
-            height: auto;
-            object-fit: cover;
+        .sa-news-banner p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #004225;
+            max-width: 350px;
+            margin-bottom: 20px;
         }
 
-        /* Primary button style (used for both Read More & Visit Website) */
+        .sa-news-banner img {
+            max-width: 220px;
+            margin-top: 20px;
+        }
+
+        /* BUTTONS - Override Bootstrap defaults */
         .btn-primary {
-            background-color: #b9585d !important;
-            /* reddish base */
-            border-color: #b9585d !important;
-            color: white !important;
-            font-weight: bold;
+            background: #F7B900 !important;
+            /* gold */
+            color: #004225 !important;
+            /* deep green text */
+            border: none !important;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 14px 32px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-primary:hover {
-            background-color: #ba8337 !important;
-            /* bronze hover */
-            border-color: #ba8337 !important;
-            color: white !important;
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: #007749 !important;
+            /* green hover */
+            color: #ffffff !important;
+            /* white text */
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #ffffff !important;
+            color: #004225 !important;
+            border: 2px solid #004225 !important;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 12px 28px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            background: #004225 !important;
+            color: #ffffff !important;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .sa-news-container {
+                grid-template-columns: 1fr;
+                /* stack left and right */
+            }
+
+            .sa-news-banner {
+                margin-top: 30px;
+            }
+
+            .news-left h1 {
+                text-align: center;
+            }
         }
     </style>
 </head>
 
 <body>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar-top">
+        <div class="navbar-left">🇿🇦 SA ELECTIONS</div>
+        <div class="navbar-middle"></div>
+        <div class="navbar-right">
+            <a href="{% url 'candidate' %}">Candidates</a>
+            <a href="{% url 'results' %}">View Results</a>
+            <span class="navbar-welcome">Welcome, Final</span>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </nav>
+
+    </div>
+    </nav>
 
     <!-- PRESIDENT + MENTAL HEALTH SECTION -->
     <h1 class="mb-4 text-center">Politics & Mental Health</h1>

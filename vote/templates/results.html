@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'vote/css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/results.css' %}">
+</head>
+
+<body>
+
+    <!-- Top navigation -->
+    <nav class="navbar-top">
+        <div class="navbar-top-wrapper">
+            <div class="navbar-brand-text">🇿🇦 SA Elections</div>
+            <div class="navbar-links">
+                <a href="{% url 'candidate' %}">Candidates</a>
+                <a href="{% url 'news' %}">News</a>
+                <a href="{% url 'logout' %}">Log Out</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- DARK MODE BUTTON -->
+    <div class="toggle-dark" onclick="toggleDarkMode()">
+        <i class="fa fa-moon"></i>
+    </div>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>📊 Election Results</h1>
+            <p>Live voting results</p>
+        </div>
+
+        <div class="search-sort">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search candidate...">
+            </div>
+
+            <div class="sort-buttons">
+                <button onclick="sortByVotes()">Sort by Votes</button>
+                <button onclick="sortByName()">Sort A-Z</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>{{ total_votes }}</h3>
+                <p>Total Votes Cast</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ candidates|length }}</h3>
+                <p>Candidates</p>
+            </div>
+        </div>
+
+        <div class="results-container" id="resultsList">
+            <h2>Candidate Rankings</h2>
+
+            {% if candidates %}
+            {% for candidate in candidates %}
+            {% with total_votes as total %}
+            {% widthratio candidate.vote_count total 100 as percentage %}
+            <div class="result-item" data-name="{{ candidate.name }}" data-votes="{{ candidate.vote_count }}">
+                <div class="rank">{{ forloop.counter }}</div>
+
+                <div class="candidate-info">
+                    <h3>{{ candidate.name }}</h3>
+                    {% if candidate.party %}
+                    <p><strong>Party:</strong> {{ candidate.party }}</p>
+                    {% endif %}
+
+                    <div class="vote-bar">
+                        <div class="vote-bar-fill"></div>
+                    </div>
+
+                    <div class="vote-count">
+                        {{ candidate.vote_count }} vote{{ candidate.vote_count|pluralize }}
+                        {% if total > 0 %}
+                        <br><small>({{ percentage }}%)</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+            {% else %}
+            <p style="text-align: center; padding: 30px; color: #666;">No voting data available yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="btn-group">
+            {% if user.is_authenticated %}
+            <a href="{% url 'news' %}" class="btn">Back to Voting</a>
+            <button onclick="location.reload();" class="btn btn-secondary">Refresh</button>
+            <button class="btn" onclick="shareResults()">Share Results</button>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Log Out</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn">Log In to Vote</a>
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            <p><strong>SA Elections © 2025</strong> | Shaping the future of South Africa</p>
+            <p>Results update automatically</p>
+        </div>
+
+    </div>
+
+    <script>
+
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            let filter = this.value.toLowerCase();
+            document.querySelectorAll(".result-item").forEach(item => {
+                let name = item.getAttribute("data-name").toLowerCase();
+                item.style.display = name.includes(filter) ? "" : "none";
+            });
+        });
+
+        function sortByVotes() {
+            const list = document.getElementById("resultsList");
+            let items = Array.from(list.querySelectorAll(".result-item"));
+
+            items.sort((a, b) => b.dataset.votes - a.dataset.votes);
+
+            items.forEach(i => list.appendChild(i));
+        }
+
+        function sortByName() {
+            let list = document.getElementById("resultsList");
+            let items = Array.from(list.querySelectorAll(".result-item"));
+
+            items.sort((a, b) =>
+                a.dataset.name.localeCompare(b.dataset.name)
+            );
+
+            items.forEach(i => list.appendChild(i));
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+        }
+        if (localStorage.getItem("darkMode") === "true") {
+            document.body.classList.add("dark");
+        }
+
+        function shareResults() {
+            navigator.clipboard.writeText(window.location.href);
+            const msg = document.getElementById("shareMsg");
+            msg.style.display = "block";
+            setTimeout(() => msg.style.display = "none", 2500);
+        }
+
+    </script>
+
+</body>
+
+</html>

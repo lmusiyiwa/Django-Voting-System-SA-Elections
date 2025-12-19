@@ -6,38 +6,203 @@
     <meta charset="utf-8">
     <title>Support Chatbot</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'vote/css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        .navbar-welcome {
+            font-weight: 600;
+            color: #FFD84D;
+            /* gold/yellow accent */
+            font-size: 1rem;
+            white-space: nowrap;
         }
 
+
+        /* NAVBAR (reuse same style as news/login) */
+        nav.navbar-top {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: #004225;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .navbar-brand-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 30px;
+            justify-content: flex-end;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-links a:hover {
+            color: #F7B900;
+        }
+
+        /* CHATBOT BOX */
         .chatbot-box {
-            max-width: 700px;
-            margin: 20px auto;
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
         }
 
+        /* CHAT WINDOW */
         #chat-window {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 12px;
-            min-height: 200px;
+            border: 2px solid #dcdcdc;
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 250px;
             background: #fafafa;
+            margin-bottom: 20px;
         }
 
+        /* MESSAGES */
         .message-bot {
-            color: #2c3e50;
-            margin-bottom: 8px;
+            color: #000302;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
 
         .message-you {
-            color: #b9585d;
+            color: #004225;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        /* BUTTONS */
+        .btn-chatbot {
+            background: #F7B900 !important;
+            /* gold */
+            color: #004225 !important;
+            /* deep green text */
+            border: none !important;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 10px 24px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-chatbot:hover {
+            background: #007749 !important;
+            /* green hover */
+            color: #ffffff !important;
+        }
+
+        /* AFFIRMATION BUTTONS */
+        /* Affirmation Buttons */
+        .btn-affirmation {
+            background: linear-gradient(to right, #007749, #F7B900);
+            color: #ffffff !important;
+            /* white text */
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-affirmation:hover {
+            opacity: 0.9;
+        }
+
+        /* Affirmation Expanded Text */
+        .collapse .card-body {
+            background: #004225;
+            /* deep green background */
+            color: #ffffff !important;
+            /* white text inside */
+            font-weight: 500;
+            border-radius: 8px;
+        }
+
+
+        .btn-affirmation:hover {
+            opacity: 0.9;
+        }
+
+        /* RESOURCES GRID */
+        .resources-wrapper {
+            margin-top: 30px;
+        }
+
+        .resources-heading {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #004225;
+            margin-bottom: 20px;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .resource-block {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .resource-block .org-label {
+            font-weight: 700;
+            color: #004225;
             margin-bottom: 8px;
+        }
+
+        .resource-img {
+            width: 100%;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .resource-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* CENTER SINGLE RESOURCE */
+        .single-center {
+            grid-column: 2 / span 1;
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Top navigation -->
+    <nav class="navbar-top">
+        <div class="navbar-brand-text">🇿🇦 SA ELECTIONS</div>
+
+        <div class="navbar-middle"></div> <!-- empty space -->
+
+        <div class="navbar-links">
+            <a href="{% url 'news' %}">News</a>
+            <span class="navbar-welcome">Welcome, Final</span>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </nav>
+
+
     <div class="chatbot-box">
         <h5 class="font-weight-bold">Chatbot</h5>
 

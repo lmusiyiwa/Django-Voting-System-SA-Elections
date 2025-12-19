@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Leader
+from vote.models import Leader
 
 def sa_politics_news(request):
     leaders = Leader.objects.all()

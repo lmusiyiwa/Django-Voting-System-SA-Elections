@@ -1,0 +1,86 @@
+/* Logout Page Styling - SA Elections Theme */
+/* Logout Page Styling - SA Elections Theme */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.logout-container {
+    width: 90%;
+    max-width: 500px;
+}
+
+.header h1 {
+    color: #000a06;
+    margin-bottom: 20px;
+    font-size: 2em;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* Card with green top border */
+.message-box {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border-top: 6px solid #004225 !important;
+    /* deep green outline on top */
+}
+
+.message-box h2 {
+    color: #000a06;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    font-weight: 700;
+}
+
+.message-box p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Button: gold base, green hover (no purple) */
+.login-button {
+    display: inline-block;
+    background-color: #FFD84D !important;
+    /* gold */
+    color: #004225 !important;
+    /* deep green text */
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 66, 37, 0.15);
+    /* subtle green-tinted shadow */
+}
+
+.login-button:hover,
+.login-button:focus {
+    background-color: #007749 !important;
+    /* green hover */
+    color: #ffffff !important;
+    /* white text */
+    transform: translateY(-2px);
+}
+
+/* Security note unchanged */
+.security-note {
+    font-size: 0.9em;
+    color: #dc3545;
+    margin-top: 30px;
+    border-top: 1px dashed #e9ecef;
+    padding-top: 15px;
+}

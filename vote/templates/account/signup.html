@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - SA Elections</title>
+
+    <link rel="stylesheet" href="/static/vote/css/navbar.css">
+
+    <style>
+        /* Reset Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Page Background & Font */
+        body {
+            background-color: #f9f9f9;
+            /* Clean light background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation - Styling the top bar to match the green theme */
+        .navbar-top {
+            background-color: #004d25;
+            /* SA Dark Green */
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+
+
+        .navbar-top-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .navbar-brand-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+
+        .navbar-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Container Centering (Replaces .page-container to center the card) */
+        .page-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* The Main Card (Unified Look - NEW wrapper) */
+        .auth-card {
+            background: white;
+            width: 100%;
+            max-width: 900px;
+            /* Wide enough for side-by-side */
+            border-radius: 15px;
+            /* Rounded corners like Login */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            /* Soft shadow */
+            display: flex;
+            /* Creates the split layout */
+            overflow: hidden;
+        }
+
+        /* Inside the <style> block of signup.html */
+        /* ... (around line 97) ... */
+
+        .navbar-brand-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            /* <--- ADD or CHANGE this line to WHITE */
+        }
+
+        /* ... (the rest of the styles) ... */
+        /* Left Side: The Form (.left-panel) */
+        .left-panel {
+            flex: 1;
+            padding: 3rem;
+            border-radius: 0;
+            box-shadow: none;
+            background: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-panel h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .left-panel p {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        /* Input Fields */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #444;
+            display: block;
+            /* Ensure label takes full width */
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            /* Smooth rounded inputs */
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #004d25;
+            /* Green border on focus */
+            outline: none;
+            box-shadow: none;
+            background-color: #fff;
+        }
+
+        /* The 'Sign Up' Button (Gold/Yellow) */
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #f4b400;
+            /* SA Gold/Yellow */
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            /* Pill shape like Login */
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #d9a000;
+            /* Darker gold on hover */
+        }
+
+        /* Right Side: The Image/Panel (.right-panel) */
+        .right-panel {
+            flex: 1;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            background-color: #ffcc00;
+            /* Yellow fallback color for the image section */
+            /* IMPORTANT: Update this path to your image file location if needed! */
+            background-image: url('{% static "vote/images/your-vote-image.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            min-height: 500px;
+            display: block;
+            visibility: hidden;
+            /* Hides the old "Contact Support" text */
+        }
+
+        /* Responsive adjustment for small screens */
+        @media (max-width: 768px) {
+            .auth-card {
+                flex-direction: column;
+            }
+
+            .right-panel {
+                min-height: 200px;
+                /* Smaller image height on mobile */
+            }
+
+            .page-container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar-top">
+        <div class="navbar-top-wrapper">
+            <div class="navbar-brand-text">🇿🇦 SA Elections</div>
+            <div class="navbar-links">
+                <a href="/news/">News</a>
+                <a href="/login/">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="auth-card">
+
+            <div class="left-panel">
+                <h1>Create Account</h1>
+                <p>Join our voting platform to participate in South African elections and access political news.</p>
+
+                <form method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken"
+                        value="z6CED1EJuJWUetmCT8FqSBwCwJwvrkKHydtbCmkahZZPCqL78BjXfFe1kL4XQ1fb">
+
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password2">Confirm Password:</label>
+                        <input type="password" id="password2" name="password2" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Sign Up</button>
+                </form>
+
+                <p style="text-align: center; margin-top: 15px; font-size: 0.9rem;">
+                    Already have an account?
+                    <a href="/login/" style="color: #007749; text-decoration: none; font-weight: bold;">Login here</a>
+                </p>
+            </div>
+
+            <div class="right-panel image-section">
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

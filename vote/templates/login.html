@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA Elections | Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            background: #f9f9f9;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: #004225;
+            color: white;
+        }
+
+        nav .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .login-container {
+            max-width: 1050px;
+            margin: 40px auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            gap: 40px;
+        }
+
+        .left {
+            padding: 20px;
+
+            /* 🔥 NEW → Centers the entire left content vertically */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        label {
+            font-weight: 600;
+            color: #004225;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #dcdcdc;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            background: #f7f7f7;
+        }
+
+        input:focus {
+            border-color: #F7B900;
+            outline: none;
+            background: #fff;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: #F7B900;
+            color: #004225;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .signup-link {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* 🔥 FIXED: FULLER IMAGE */
+        .right {
+            background: linear-gradient(to bottom right, #007749, #F7B900);
+            border-radius: 0px;
+            padding: 0px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flag-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 🔥 fills entire right side */
+            border-radius: 0px;
+            margin-top: 0px;
+        }
+
+        @media (max-width: 900px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">🇿🇦 SA Elections</div>
+        <ul>
+            <li><a href="{% url 'home' %}" style="color:white;">Home</a></li>
+        </ul>
+    </nav>
+
+    <div class="login-container">
+
+        <div class="left">
+            <h1>Welcome to SA Elections</h1>
+            <br>
+            <p>Login to access your dashboard and participate in shaping South Africa's future!</p>
+            <br>
+            <form method="POST">
+                {% csrf_token %}
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit" class="btn-primary">Login</button>
+
+                <div class="signup-link">
+                    No account? <a href="{% url 'signup' %}">Register here</a>
+                    <style>
+                        /* existing styles... */
+
+                        .signup-link a {
+                            color: green;
+                            font-weight: bold;
+                            text-decoration: none;
+                        }
+
+                        .signup-link a:hover {
+                            color: #007749;
+                        }
+                    </style>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="right">
+
+            <img src="{% static 'vote/images/sa_flag.jpg' %}" class="flag-img">
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,5 +1,8 @@
-from django.shortcuts import render
-from .models import Leader
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Leader, Candidate, Vote, Voter
 
 # --- Translations ---
 translations = {
@@ -201,6 +204,7 @@ resources = [
 
 # --- News page ---
 # --- News page ---
+@login_required(login_url='login')
 def sa_politics_news(request):
     articles = [
         {
@@ -214,8 +218,13 @@ def sa_politics_news(request):
 
 # --- Home view (optional, points to news) ---
 def home_view(request):
-    return sa_politics_news(request)
+    # Authenticated users see the news page; unauthenticated users see a public welcome page
+    if request.user.is_authenticated:
+        return sa_politics_news(request)
+    # Render a public landing / welcome page so visitors can see the site before logging in
+    return render(request, 'home.html')
 
+@login_required(login_url='login')
 def chatbot_view(request):
     if "conversation" not in request.session:
         request.session["language"] = None
@@ -352,144 +361,184 @@ def chatbot_view(request):
         "resources": resources
     })
 
-    # Multilingual keyword mapping (all resources for all languages)
-    resource_keywords = {
-        "food": ["food", "kos", "ukudla", "ukutya", "dijo", "swakudya", "zwiḽiwa", "kudla"],
-        "shelter": ["shelter", "skuiling", "safety", "indawo yokuhlala", "bolulo", "ndhawu yo tshama", "vhudzulo", "indzawo yekuhlala"],
-        "psychologist": [
-            "psychologist", "sielkundige", "udokotela wezengqondo", "ugqirha wezengqondo",
-            "setsebi sa kelello", "setsebi sa maikutlo", "setsebi sa monagano",
-            "dokodela wa mianakanyo", "dokodela wa ṱhanziela", "dokotela wekwati kwengcondvo"
-        ],
-        "social_worker": [
-            "social worker", "maatskaplike werker", "umphathi wezenhlalakahle", "mosebeletsi oa sechaba",
-            "modiri wa loago", "modiri wa setšhaba", "mushandzisi wa vaaki", "mushumeli wa vhathu", "umsebenti wesintfu"
-        ],
-        "education": ["education", "onderwys", "imfundo", "thuto", "dyondzo", "vhuḓidini", "imfundvo"],
-        "case": ["case", "saak", "icala", "ityala", "nyeoe", "kgang", "mhaka", "siaṱari", "licala"],
-        "call_back": [
-            "call back", "callback", "terugbel", "ukubuyiselwa emuva", "umnxeba", "ho letsetsoa hape",
-            "go letsetsiwa gape", "go letsetšwa gape", "ku foniwa nakambe", "u vhidzwa hafhu", "kubuyiselwa emuva"
-        ],
-    }
+# vote/views.py
 
-    # Yes/No across languages
-    yes_keywords = {"yes", "ja", "yebo", "ewe", "ee"}
-    no_keywords = {"no", "nee", "cha", "hayi", "che", "nnyaa", "aowa", "e-e", "hai"}
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Election, Candidate, Voter, Vote
 
+# --- Authentication Views ---
+
+def login_view(request):
+    """Handle user login"""
+    if request.user.is_authenticated:
+        return redirect('news')  # or 'home' depending on your flow
+    
     if request.method == "POST":
-        if "clear_chat" in request.POST:
-            request.session["language"] = None
-            request.session["conversation"] = [
-                {"sender": "bot", "text": translations["intro"]["English"], "new": True}
-            ]
-            request.session["awaiting_yes_no"] = False
-            conversation = request.session["conversation"]
-            language = request.session["language"]
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            # Create Voter record if it doesn't exist
+            Voter.objects.get_or_create(user=user)
+            messages.success(request, f"Welcome {username}!")
+            return redirect('news')  # or 'home'
         else:
-            user_message = request.POST.get("user_message", "").strip()
-            if user_message:
-                conversation.append({"sender": "you", "text": user_message})
-                lower = user_message.lower()
+            messages.error(request, "Invalid username or password.")
+    
+    return render(request, 'login.html')
 
-                # If we are waiting for yes/no, handle that first
-                if request.session.get("awaiting_yes_no", False):
-                    # Clear 'new' from previous bot messages
-                    for msg in conversation:
-                        if msg["sender"] == "bot":
-                            msg["new"] = False
 
-                    if lower in yes_keywords:
-                        # Show the menu again (in chosen language)
-                        bot_reply = translations["menu"][language]
-                        conversation.append({"sender": "bot", "text": bot_reply, "new": True})
-                        request.session["awaiting_yes_no"] = False
-                    elif lower in no_keywords:
-                        # Goodbye (in chosen language)
-                        bot_reply = translations["goodbye"][language]
-                        conversation.append({"sender": "bot", "text": bot_reply, "new": True})
-                        request.session["awaiting_yes_no"] = False
-                    else:
-                        # Invalid answer → re-ask yes/no (in chosen language)
-                        conversation.append({"sender": "bot", "text": translations["follow_up"][language], "new": True})
+def logout_view(request):
+    """Handle user logout"""
+    logout(request)
+    return render(request, 'logout.html')
 
-                    request.session["conversation"] = conversation
-                    request.session["language"] = language
 
-                    return render(request, "chatbot.html", {
-                        "conversation": conversation,
-                        "affirmations": affirmations,
-                        "resources": resources
-                    })
+# --- Election Views ---
 
-                # Language selection flow
-                if language is None:
-                    # Clear 'new' flags
-                    for msg in conversation:
-                        if msg["sender"] == "bot":
-                            msg["new"] = False
+@login_required(login_url='login')
+def results_view(request):
+    """Display election results with vote counts"""
+    candidates = Candidate.objects.all()
+    
+    candidate_data = []
+    for candidate in candidates:
+        vote_count = Vote.objects.filter(candidate=candidate).count()
+        candidate_data.append({
+            'id': candidate.id,
+            'name': candidate.name,
+            'party': candidate.party if hasattr(candidate, 'party') else 'Independent',
+            'vote_count': vote_count,
+            'election': candidate.election
+        })
+    
+    candidate_data.sort(key=lambda x: x['vote_count'], reverse=True)
+    total_votes = sum(c['vote_count'] for c in candidate_data)
+    
+    context = {
+        'candidates': candidate_data,
+        'total_votes': total_votes,
+    }
+    return render(request, 'results.html', context)
 
-                    if lower in language_aliases:
-                        request.session["language"] = language_aliases[lower]
-                        language = request.session["language"]
-                        bot_reply = translations["menu"][language]
-                    else:
-                        bot_reply = "Please type one of the languages listed."
-                    conversation.append({"sender": "bot", "text": bot_reply, "new": True})
 
-                else:
-                    # Handle help options using multilingual keyword mapping
-                    matched_option = None
-                    for option, keywords in resource_keywords.items():
-                        if any(k in lower for k in keywords):
-                            matched_option = option
-                            break
+@login_required(login_url='login')
+def candidate_view(request):
+    """Display candidates for voting"""
+    voter_name = request.user.username
+    context = {
+        'voter_name': voter_name,
+        'candidates': Candidate.objects.all(),
+    }
+    return render(request, 'candidate.html', context)
 
-                    if matched_option:
-                        # Reply with the resource in chosen language (button intact)
-                        bot_reply = translations["resources"][language][matched_option]
-                        # Clear 'new' flags on previous bot messages
-                        for msg in conversation:
-                            if msg["sender"] == "bot":
-                                msg["new"] = False
-                        conversation.append({"sender": "bot", "text": bot_reply, "new": True})
-                        # Freeze resource reply (no typing effect), animate follow-up only
-                        conversation[-1]["new"] = False
-                        conversation.append({"sender": "bot", "text": translations["follow_up"][language], "new": True})
-                        request.session["awaiting_yes_no"] = True
 
-                    elif lower in yes_keywords:
-                        bot_reply = translations["menu"][language]
-                        # Clear 'new' flags
-                        for msg in conversation:
-                            if msg["sender"] == "bot":
-                                msg["new"] = False
-                        conversation.append({"sender": "bot", "text": bot_reply, "new": True})
-                        request.session["awaiting_yes_no"] = False
+@login_required(login_url='login')
+def voted_view(request):
+    """Display confirmation after vote submission"""
+    voter_name = request.user.username
+    return render(request, 'voted.html', {'voter_name': voter_name})
 
-                    elif lower in no_keywords:
-                        bot_reply = translations["goodbye"][language]
-                        # Clear 'new' flags
-                        for msg in conversation:
-                            if msg["sender"] == "bot":
-                                msg["new"] = False
-                        conversation.append({"sender": "bot", "text": bot_reply, "new": True})
-                        request.session["awaiting_yes_no"] = False
 
-                    else:
-                        # Default: show menu again for unknown input
-                        bot_reply = translations["menu"][language]
-                        # Clear 'new' flags
-                        for msg in conversation:
-                            if msg["sender"] == "bot":
-                                msg["new"] = False
-                        conversation.append({"sender": "bot", "text": bot_reply, "new": True})
+@login_required(login_url='login')
+def cast_vote(request):
+    """Handle vote submission"""
+    voter, created = Voter.objects.get_or_create(user=request.user)
+    elections = Election.objects.all()
+    
+    if request.method == "POST":
+        election_id = request.POST.get('election')
+        candidate_id = request.POST.get('candidate')
+        
+        election = Election.objects.get(id=election_id)
+        candidate = Candidate.objects.get(id=candidate_id)
+        
+        if not voter.voted:
+            Vote.objects.create(voter=voter, candidate=candidate, election=election)
+            voter.voted = True
+            voter.save()
+            return render(request, 'cast_vote.html', {'success': True})
+        else:
+            return render(request, 'cast_vote.html', {'error': 'You have already voted.'})
+    
+    return render(request, 'cast_vote.html', {'elections': elections})
 
-        request.session["conversation"] = conversation
-        request.session["language"] = language
 
-    return render(request, "chatbot.html", {
-        "conversation": request.session["conversation"],
-        "affirmations": affirmations,
-        "resources": resources
+# --- General Views ---
+
+def home(request):
+    """Homepage showing elections"""
+    elections = Election.objects.all()
+    return render(request, 'home.html', {'elections': elections})
+
+
+def candidate_list(request):
+    """List of candidates"""
+    candidates = Candidate.objects.all()
+    return render(request, 'candidate.html', {'candidates': candidates})
+
+# account/views.py
+# You must ensure these two imports are at the very top of your views.py file:
+from django.contrib.auth.forms import UserCreationForm 
+from django.contrib import messages # Used for showing a success message
+
+# --- The Sign-up View ---
+def signup_view(request):
+    """Handles user registration."""
+    
+    # Check if the request is a POST (user submitted the form)
+    if request.method == 'POST':
+        # 1. Create a form instance, populated with the data from the request
+        form = UserCreationForm(request.POST) 
+        
+        # 2. Check if the submitted data is valid
+        if form.is_valid():
+            user = form.save()
+            # Optional: Log the user in immediately after sign-up, if desired
+            # from django.contrib.auth import login 
+            # login(request, user) 
+            
+            # Show a success message
+            messages.success(request, f"Account created for {user.username}. Please log in.")
+            
+            # Redirect to the login page (or wherever you want the user to go next)
+            return redirect('login') 
+    
+    # If the request is a GET (user first visits the page), or if the form was invalid:
+    else:
+        # 1. Create an empty form instance
+        form = UserCreationForm()
+
+    # 2. Render the HTML template, passing the 'form' object to it
+    return render(request, 'account/signup.html', {'form': form})
+
+# /vote/views.py (or whatever file contains your voting logic)
+from django.shortcuts import render, redirect # <-- MUST be here
+from django.contrib.auth.models import User
+from django.db.models import Count
+
+# Import your own models
+from .models import Candidate, Voter, Vote, Election 
+
+# Ensure the 'results' function looks exactly like this:
+def results(request):
+    """Display election results with vote counts"""
+    # Annotate candidates with vote counts
+    candidates_with_votes = Candidate.objects.annotate(
+        vote_count=Count('vote')
+    ).order_by('-vote_count')
+    
+    total_votes = Vote.objects.count()
+    
+    return render(request, 'results.html', {
+        'candidates': candidates_with_votes,
+        'total_votes': total_votes
     })
+
+# ... and that the home and cast_vote functions are also fully defined above the results function (or in a way that Python can read them).

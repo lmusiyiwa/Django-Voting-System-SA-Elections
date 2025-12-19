@@ -1,0 +1,386 @@
+/* RESULTS PAGE STYLING - SA Elections Theme */
+
+/* GLOBAL RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* HEADER */
+.header {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.header h1 {
+    color: #004225;
+    font-weight: 800;
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.header p {
+    color: #55f5;
+    font-size: 1rem;
+}
+
+/* SEARCH + SORT */
+.search-sort {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.search-box input {
+    width: 250px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.sort-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.sort-buttons button {
+    padding: 10px 14px;
+    background: #FFD84D;
+    color: #004225;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.sort-buttons button:hover {
+    background: #004225;
+    color: #fff;
+}
+
+/* STATS GRID */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: #004225;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.stat-card p {
+    color: #555;
+}
+
+/* RESULTS CONTAINER */
+.results-container {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.results-container h2 {
+    margin-bottom: 20px;
+    color: #004225;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+/* INDIVIDUAL RESULT ITEM */
+.result-item {
+    padding: 20px;
+    border-left: 6px solid #004225;
+    margin-bottom: 15px;
+    background: #f5f7fa;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.rank {
+    font-size: 1.6rem;
+    font-weight: 800;
+    min-width: 50px;
+    color: #004225;
+}
+
+.candidate-info {
+    flex: 1;
+}
+
+.candidate-info h3 {
+    margin: 0 0 10px 0;
+    color: #004225;
+    font-weight: 700;
+}
+
+.candidate-info p {
+    margin: 0 0 10px 0;
+    color: #555;
+}
+
+/* VOTE BAR */
+.vote-bar {
+    width: 100%;
+    height: 20px;
+    background: #ddd;
+    border-radius: 10px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.vote-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #F7B900, #004225);
+    width: 0%;
+    transition: width 1s ease;
+}
+
+.vote-count {
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: right;
+    min-width: 100px;
+    color: #004225;
+}
+
+/* BUTTONS */
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background: #F7B900;
+    color: #004225;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.btn:hover {
+    background: #007749;
+    color: #fff;
+}
+
+.btn-secondary {
+    background: #ffffff;
+    color: #007749;
+    border: 2px solid #007749;
+}
+
+.btn-secondary:hover {
+    background: #007749;
+    color: #fff;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-group {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* FOOTER */
+.footer {
+    background: #ffffff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 20px;
+    color: #555;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.footer p {
+    margin: 5px 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .search-sort {
+        flex-direction: column;
+    }
+
+    .search-box input {
+        width: 100%;
+    }
+
+    .sort-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .vote-count {
+        text-align: left;
+    }
+}
+
+/* NAVBAR - SA Elections Theme */
+/* NAVBAR - SA Elections Theme */
+nav.navbar-top {
+    /* 1. Ensure the NAV bar itself is full width and green */
+    width: 100%;
+    background-color: #004225;
+    padding: 20px 0;
+    /* Padding will be managed by the wrapper below */
+
+    /* 2. Use Flex to contain and center the inner wrapper */
+    display: flex;
+    justify-content: center;
+    /* This centers the wrapper horizontally */
+    align-items: center;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* TARGET THE HTML LOGO CLASS */
+.navbar-brand-text {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+    white-space: nowrap;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* The wrapper ensures the logo (left) and links (right) are spaced out */
+.navbar-top-wrapper {
+    /* 3. Ensure the wrapper takes maximum defined space */
+    width: 90%;
+    /* Using 90% instead of 100% and max-width 1100px */
+    max-width: 1100px;
+
+    /* 4. This is the key: Logo far left, Links far right */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* 5. Add back padding for inner content visibility */
+    padding: 0 50px;
+    /* Add horizontal padding inside the wrapper */
+}
+
+/* ... (the rest of the styles for .navbar-links and .navbar-links a remain the same) ... */
+
+/* Style the links container */
+.navbar-links {
+    display: flex;
+    /* Ensures links sit side-by-side */
+    gap: 30px;
+}
+
+/* Style the links themselves: White text and correct font */
+.navbar-links a {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: #FFD84D;
+}
+
+.navbar-right a:hover {
+    color: #FFD84D;
+    /* gold hover */
+}
+
+.navbar-welcome {
+    font-weight: 600;
+    color: #FFD84D;
+    /* gold accent */
+    font-size: 1rem;
+}
+
+/* BUTTONS - SA Elections Theme */
+.btn-primary {
+    background: #FFD84D !important;
+    /* gold */
+    color: #007749 !important;
+    /* deep green text */
+    border: none !important;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px 32px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: #007749 !important;
+    /* green hover */
+    color: #ffffff !important;
+    /* white text */
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #ffffff !important;
+    color: #007749 !important;
+    border: 2px solid #007749 !important;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 12px 28px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background: #007749 !important;
+    color: #ffffff !important;
+}

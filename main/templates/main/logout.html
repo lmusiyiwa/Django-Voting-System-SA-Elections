@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logged Out</title>
+    <link rel="stylesheet" href="{% static 'css/logout.css' %}">
+</head>
+
+<body>
+    <div class="logout-container">
+        <div class="header">
+            <h1>🐝 Ballot Bee</h1>
+        </div>
+
+        {% if just_logged_out %}
+        <div class="message-box">
+            <h2>✅ You have been logged out</h2>
+            <p>Thank you for using the Voting System. Your session has been terminated.</p>
+            <a href="{% url 'login' %}" class="login-button">Log in again</a>
+        </div>
+        {% else %}
+        <div class="message-box">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <form method="post" style="display:inline-block;">
+                {% csrf_token %}
+                <button type="submit" class="login-button">Yes, log me out</button>
+            </form>
+            <a href="{% url 'news' %}" class="login-button" style="background:#6c757d; margin-left:8px;">Cancel</a>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

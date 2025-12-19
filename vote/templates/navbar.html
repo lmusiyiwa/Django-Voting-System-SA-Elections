@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Politics & Mental Health</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'vote/css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/leaders.css' %}">
+
+    <style>
+        /* GLOBAL RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* NAVBAR */
+        /* TOP WHITE BAR */
+        /* RESET NAV DEFAULTS THAT CAN BREAK LAYOUT */
+        nav.navbar-top,
+        .navbar-top * {
+            box-sizing: border-box;
+        }
+
+        nav.navbar-top a {
+            text-decoration: none;
+        }
+
+        /* NAVBAR GRID: LEFT | EMPTY | RIGHT */
+        nav.navbar-top {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            /* left fixed | middle flex | right fixed */
+            align-items: center;
+            gap: 0;
+            /* true empty middle */
+            padding: 20px 50px;
+            background-color: #004225;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* LEFT: SA Elections */
+        .navbar-left {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+        }
+
+        /* RIGHT: links + welcome + logout */
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-right a {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-right a:hover {
+            color: #F7B900;
+        }
+
+        .navbar-welcome {
+            font-weight: 600;
+            color: #FFD84D;
+            font-size: 1rem;
+        }
+    </style>
+
+<body>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar-top">
+        <div class="navbar-left">🇿🇦 SA ELECTIONS</div>
+        <div class="navbar-middle"></div>
+        <div class="navbar-right">
+            <a href="{% url 'candidate' %}">Candidates</a>
+            <a href="{% url 'results' %}">View Results</a>
+            <span class="navbar-welcome">Welcome, Final</span>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </div>
+    </nav>
+
+    </div>
+    </nav>
+
+</body>
+
+</html>
+
+<!-- END OF NAVIGATION BAR -->

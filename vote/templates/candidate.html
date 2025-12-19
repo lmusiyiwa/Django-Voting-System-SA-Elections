@@ -1,0 +1,477 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- <title>Cast Your Vote</title>
+    <script src="[https://cdn.tailwindcss.com"></script>--]https://cdn.tailwindcss.com"></script>-->
+
+    <title>BallotBee - Cast Your Vote</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'vote/css/navbar.css' %}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .welcome-box {
+            background: linear-gradient(135deg, #004225 0%, #007749 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .welcome-box h1 {
+            margin-bottom: 15px;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .welcome-box p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #f5c6cb;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 65px;
+            margin-bottom: 40px;
+        }
+
+        .candidate-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .candidate-card input[type="radio"] {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .candidate-card input[type="radio"]:checked+.card-content {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .candidate-card input[type="radio"]:checked+.card-content .card-header {
+            background: #004225;
+        }
+
+        .card-content {
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e8eaed 100%);
+            padding: 20px;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .card-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-header.no-image {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e8eaed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-header.no-image i {
+            font-size: 60px;
+            color: #ccc;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-body h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .card-body p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .card-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .card-label:hover {
+            background: #004225;
+            color: white;
+        }
+
+        .card-label input[type="radio"] {
+            position: static;
+            width: 18px;
+            height: 18px;
+        }
+
+        .voter-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .voter-section h3 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .voter-section label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .voter-section input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .voter-section input:focus {
+            outline: none;
+            border-color: #f7b900;
+        }
+
+        .submit-btn {
+            margin-top: 25px;
+        }
+
+        .submit-btn button {
+            padding: 14px 40px;
+            background: #007749;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: #004225;
+        }
+
+        .submit-btn button:hover {
+            transform: translateY(-2px);
+            box-shadow: #007749;
+        }
+
+        .submit-btn button:active {
+            transform: translateY(0);
+        }
+
+        .no-candidates {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-candidates i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .no-candidates p {
+            font-size: 18px;
+        }
+
+        footer {
+            background: white;
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 60px;
+        }
+
+        .social {
+            margin-bottom: 20px;
+        }
+
+        .social a {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 22px;
+            color: #004225;
+            transition: color 0.3s;
+        }
+
+        .social a:hover {
+            color: #08060a;
+        }
+
+        .footer-text p {
+            margin: 8px 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .candidates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .welcome-box h1 {
+                font-size: 28px;
+            }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: white;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav ul li {
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        nav ul li:hover {
+            color: #F7B900;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar-top">
+        <div class="navbar-top-wrapper">
+            <div class="navbar-brand-text"> 🇿🇦 SA Elections</div>
+            <div class="navbar-links">
+                {% if user.is_authenticated %}
+                <span class="navbar-welcome">Welcome, <strong>{{ user.username }}</strong></span>
+                <a href="{% url 'candidate' %}">Candidates</a>
+                <a href="{% url 'results' %}">View Results</a>
+                <a href="{% url 'logout' %}">Log Out</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+
+
+    <!--<div class="max-w-4xl mx-auto">-->
+
+    <!-- {% for c in candidates %}
+        <div class="mb-6">
+            <div class="flex justify-between mb-2">
+                <span class="font-semibold text-gray-700">{{ c.name }} ({{ c.position }})</span>
+                <span class="font-bold text-primary-pink">{{ c.votes }} votes</span>
+            </div>-->
+
+    <!--  <div class="w-full bg-gray-300 rounded-full h-4">-->
+    <!-- <div class="bg-primary-pink h-4 rounded-full" style="width: {{ c.votes }}%;"></div>-->
+    <!---    </div>
+        </div>
+        {% endfor %}
+
+    </div>-->
+
+
+
+    <div class="welcome-box">
+        <h1>🗳️ Cast Your Vote</h1>
+        <p>Select your preferred candidate and make your voice heard</p>
+    </div>
+
+    <div class="container">
+        {% if error %}
+        <div class="error">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'results' %}">
+            {% csrf_token %}
+
+            {% if candidates %}
+            <input type="hidden" name="election_id" value="{{ candidates.0.election.id }}">
+            <div class="candidates-grid">
+                {% for candidate in candidates %}
+                <label class="candidate-card">
+                    <input type="radio" name="candidate_id" value="{{ candidate.id }}" required>
+                    <div class="card-content">
+                        <div class="card-header">
+                            {% if candidate.image %}
+                            <img src="{{ candidate.image.url }}" alt="{{ candidate.name }}">
+                            {% else %}
+                            <div class="card-header no-image">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h3>{{ candidate.name }}</h3>
+                            <p>{{ candidate.description|truncatewords:20 }}</p>
+                        </div>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-candidates">
+                <i class="fas fa-inbox"></i>
+                <p>No candidates available yet.</p>
+            </div>
+            {% endif %}
+
+            <hr>
+            <div class="submit-btn" style="text-align: center; padding: 30px 0;">
+                <button type="submit">SUBMIT</button>
+            </div>
+        </form>
+    </div>
+
+    <hr>
+
+    <footer>
+        <div class="social">
+            <a href="#" aria-label="phone"><i class="fa-solid fa-phone"></i></a>
+            <a href="#" aria-label="facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" aria-label="twitter"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#" aria-label="instagram"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+
+        <div class="footer-text">
+            <p>+27 123 456 789 · www.facebook.com/saelections · www.twitter.com/saelections ·
+                www.instagram.com/saelections
+            </p>
+            <p class="copyright">Copyright ©️ 2025 SA Elections. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

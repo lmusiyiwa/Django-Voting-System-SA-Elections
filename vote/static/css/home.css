@@ -1,0 +1,209 @@
+:root {
+    --bg: #fff7fb;
+    --card: #ffffff;
+    --ink: #2c2c2c;
+    --pink: #ff4fa3;
+    --pink-700: #e23c8f;
+    --bee-dark: #2b2b2b;
+    --bee-stripe: #ffbf00;
+    --accent: #7a53ff;
+    --muted: #8a8a8a;
+    --success: #00b686;
+    --danger: #d64562;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --radius: 18px;
+    --peach: #ffd9c9;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: radial-gradient(1200px 700px at 80% -200px, #ffeef7 0%, var(--bg) 30%, #fff 100%);
+    color: var(--ink);
+}
+
+/* BRAND */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 28px;
+}
+
+.brand h1 span {
+    color: var(--pink);
+}
+
+/* Bee Logo */
+.bee-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    position: relative;
+    background: linear-gradient(180deg, var(--bee-stripe), #ffbf00);
+    box-shadow: var(--shadow);
+}
+
+.bee-logo::before,
+.bee-logo::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 33%;
+    background: var(--bee-dark);
+    opacity: 0.85;
+}
+
+.bee-logo::before {
+    top: 33%;
+}
+
+.bee-logo::after {
+    top: 66%;
+}
+
+.bee-wing {
+    position: absolute;
+    top: -6px;
+    right: -4px;
+    width: 26px;
+    height: 16px;
+    background: #eaf7ff;
+    border-radius: 50%;
+}
+
+/* LAYOUT */
+.container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 24px;
+}
+
+@media(max-width:980px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* LEFT PANEL */
+.hero {
+    padding: 28px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #ffeef7, #ffe9f2);
+    box-shadow: var(--shadow);
+}
+
+.stage {
+    position: relative;
+    height: 280px;
+    margin-top: 16px;
+}
+
+.mega {
+    position: absolute;
+    right: 10%;
+    bottom: 0;
+    width: 260px;
+}
+
+/* RIGHT PANEL */
+.card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+}
+
+/* TABS */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.tab {
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #f9f2ff;
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.tab.active {
+    background: #ffeaf4;
+    color: var(--pink);
+}
+
+.hidden {
+    display: none;
+}
+
+/* FORM FIELDS */
+.field {
+    display: grid;
+    gap: 6px;
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.box input {
+    border: none;
+    outline: none;
+    width: 100%;
+}
+
+/* BUTTONS */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, var(--pink), var(--pink-700));
+    color: #fff;
+}
+
+/* FINGERPRINT / ID CARDS */
+.auth-options {
+    display: flex;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.auth-card {
+    background: var(--peach);
+    padding: 18px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    flex: 1;
+    cursor: pointer;
+}
+
+.auth-card img {
+    width: 40px;
+    margin-bottom: 8px;
+}

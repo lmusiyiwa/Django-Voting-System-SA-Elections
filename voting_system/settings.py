@@ -7,7 +7,7 @@ SECRET_KEY = "django-insecure-^2_qoo%2xiydnnjuln!z)+p#rhp49g3*#8zrtw%&asdnq(oce6
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Application definition
 INSTALLED_APPS = [
@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "vote",
+    "main",
 ]
 
 MIDDLEWARE = [
@@ -32,16 +33,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "voting_system.urls"
 
+# ✅ Fixed TEMPLATES block
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],  # you can add custom template dirs here if needed
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],   # or [BASE_DIR / "templates"] if you want a global templates folder
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -85,4 +88,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # NewsAPI key for political news
-NEWS_API_KEY = config("NEWS_API_KEY")
+NEWS_API_KEY = config("NEWS_API_KEY", default="")
+
+# Authentication settings
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'news'
+LOGOUT_REDIRECT_URL = 'login'
