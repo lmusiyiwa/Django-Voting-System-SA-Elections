@@ -75,10 +75,13 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files
+# Static files
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",  # optional, if you have a static folder
 ]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 # Media files (for leader images)
 MEDIA_URL = "/media/"
